@@ -1,0 +1,50 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb-admin
+spec:
+  type: NodePort
+  selector:
+    app: mongodb-admin
+  ports:
+    - protocol: TCP
+      targetPort: 3100
+      port: 3100
+      nodePort: 31000
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mongodb-admin
+spec:
+  selector:
+    matchLabels:
+      app: mongodb-admin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: mongodb-admin
+    spec:
+      containers:
+        - image: huggingface/mongoku:latest
+          name: mongodb-admin
+          env:
+            # Use secret in real usage
+            - name: MONGOKU_DEFAULT_HOST
+              value: mongodb://root:password@mongodb.dev.svc.cluster.local:27017
+          ports:
+            - containerPort: 3100
+              name: mongodb-admin
+          resources:
+            requests:
+              memory: "512m"
+              cpu: "250m"
+            limits:
+              memory: "512m"
+              cpu: "500m"
+      initContainers:
+        - name: init-db
+          image: busybox:1.28
+          command: ['sh', '-c', "until nslookup mongodb.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for MongoDB; sleep 2; done"]
