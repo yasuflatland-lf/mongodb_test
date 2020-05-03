@@ -1,20 +1,13 @@
-## MongoDB Kubernetes + Helm Test
-### Pre Condition
+# MongoDB Standalone and MongoDB Admin Test
+This repository demonstrates starting up MongoDB and Admin app (`mongoku`)
+
+## Pre Condition
 - Java 8 JDK
 - Docker 2.2.0.5
 - Helm 3.1.2
 
-### How to start
-```
-make start
-```
+## Quick Start to test MongoDB Admin
+1. Start Cluster `make start`
+1. Wait until all Pods start with `make info` command.
+1. Access to `http://localhost:31000` and you'll see the Admin panel
 
-### How to stop
-```
-make stop
-```
-
-### How to ses the current Kubernetes status
-```
-make info
-```
